@@ -24,10 +24,10 @@ class JsonParserTest {
 	@Test
 	void testTraverseAndFind() {
 		List<String> IDs = new ArrayList<>();
-		JsonNode rNode = JsonParser.convertJsonStringToJsonRootNode(createJsonWithId()); 
+		JsonNode rNode = JsonParser.convertJsonStringToJsonRootNode(createEmptyJson()); 
 		JsonParser.traverseAndFind(IDs, "id", rNode, 1);
 		
-		assertEquals(Integer.parseInt(IDs.get(0)), 100);		
+		assertTrue(IDs.isEmpty());		
 	}
 	
 	private String createJsonWithId() {
@@ -35,6 +35,10 @@ class JsonParserTest {
 				+ "\"thumbnailPath\":\"http://localhost\",\"thumbnailExtention\":\"jpg\", \"total\": 1493}"
 				+ "{\"id\":101,\"desc\":\"\",\"name\":\"New Moon\","
 				+ "\"thumbnailPath\":\"http://localhost\",\"thumbnailExtention\":\"png\", \"total\": 1500}";
+	}
+	
+	private String createEmptyJson() {
+		return "{}";
 	}
 	
 	

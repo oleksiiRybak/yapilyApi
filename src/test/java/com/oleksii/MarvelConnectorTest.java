@@ -65,8 +65,7 @@ class MarvelConnectorTest {
 
 	@Test
 	void testFindTotalCharacters() {
-		int expectedTotal = 1020;
-			
+		int expectedTotal = 1020;			
 		assertEquals(expectedTotal, marvelConnector.findTotalCharacters(createJsonWithTotal(expectedTotal)));
 	}
 	
