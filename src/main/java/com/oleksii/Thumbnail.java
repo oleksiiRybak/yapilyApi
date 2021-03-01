@@ -9,5 +9,13 @@ public class Thumbnail {
 		this.thumbnailExtention = thumbnailExtention;
 		this.thumbnailPath = thumbnailPath;
 	}
+	
+	String path() {
+		return this.thumbnailPath;
+	}
+	
+	String extention() {
+		return this.thumbnailExtention;
+	}
 
 }

@@ -42,18 +42,7 @@ public class MarvelConnector implements Connector {
 			String jString = "";
 			if (idResp.getStatus() == 200) {
 				jString = idResp.readEntity(String.class);
-				ObjectMapper objectMapper = new ObjectMapper();
-				
-				JsonNode rNode;
-				try {
-					rNode = objectMapper.readTree(jsonString);
-				} catch (JsonMappingException e) {
-					rNode = objectMapper.createObjectNode();
-					e.printStackTrace();
-				} catch (JsonProcessingException e) {
-					rNode = objectMapper.createObjectNode();
-					e.printStackTrace();
-				} 
+				JsonNode rNode = JsonParser.convertJsonStringToJsonRootNode(jsonString); 
 				JsonParser.traverseAndFind(recordingArr, "id", rNode, 1);
 			}
 		}	
@@ -70,29 +59,13 @@ public class MarvelConnector implements Connector {
 		return jsonString;
 	}
 	
-	void callMarvelApiService(String BASE_URI) {
-		String jsonString = fetchResult(BASE_URI);
-	}
-
-	private static int findTotalCharacters(String jsonString) {
+	protected  int findTotalCharacters(String jsonString) {
 		
 		List<String> total = new ArrayList<>();
-		ObjectMapper objectMapper = new ObjectMapper();
-		
-		JsonNode rNode;
-		try {
-			rNode = objectMapper.readTree(jsonString);
-		} catch (JsonMappingException e) {			
-			e.printStackTrace();
-			rNode = objectMapper.createObjectNode();
-		} catch (JsonProcessingException e) {			
-			e.printStackTrace();
-			rNode = objectMapper.createObjectNode();
-		} 
+		JsonNode rNode = JsonParser.convertJsonStringToJsonRootNode(jsonString); 
 		JsonParser.traverseAndFind(total, "total", rNode, 1);
 		
-		if(!total.isEmpty()) {	
-			String totti = total.get(0);
+		if(!total.isEmpty()) {				
 			return Integer.parseInt(total.get(0));
 		} else {
 			return 0;
@@ -100,8 +73,7 @@ public class MarvelConnector implements Connector {
 		
 	}
 
-	private static String prepareAllCharactersApiUrl(int offset, String id) {
-		//Client client = ClientBuilder.newClient(); 
+	protected static String prepareAllCharactersApiUrl(int offset, String id) {		
 		String timespamp = "1";
 		
 		String apiPublicKey = "cd3d7c861e2b8cbaf32911efd20d4c10";
@@ -144,12 +116,12 @@ public class MarvelConnector implements Connector {
 		
 		List recordingArr = new ArrayList<>();
 		Map charactersStorage = new HashMap<>();
-		handleValue(charactersStorage, jsonObject);
+		JsonParser.handleValue(charactersStorage, jsonObject);
 		
 		return character(charactersStorage);
 	}
 	
-	private static Character character(Map charactersStorage) {
+	protected static Character character(Map charactersStorage) {
 		return new MarvelCharacter((Integer)charactersStorage.get("id"), 
 															   (String)charactersStorage.get("description"), 
 															   (String)charactersStorage.get("name"), 
@@ -157,39 +129,6 @@ public class MarvelConnector implements Connector {
 															   (String)charactersStorage.get("thumbnailExtension"));		
 	}
 	
-	static void handleValue(Map charactersStorage, Object value) {
-	    if (value instanceof JSONObject) {	    	
-	        handleJSONObject(charactersStorage, (JSONObject) value);
-	    } else if (value instanceof JSONArray) {
-	        handleJSONArray(charactersStorage, (JSONArray) value);
-	    } else {
-	    	System.out.println(value);	    	
-	    }
-	}
 	
-	static void handleJSONObject(Map charactersStorage, JSONObject jsonObject) {		
-	    jsonObject.keys().forEachRemaining(key -> {
-	    	if("thumbnail".equals(key)) {
-	    		Map thumbnailDetailsMap = new Gson().fromJson(jsonObject.get(key).toString(), HashMap.class);
-	    		//Object thumbnailDetails = jsonObject.get("thumbnail");	    		
-	    		charactersStorage.put("thumbnailPath", thumbnailDetailsMap.get("path"));
-	    		charactersStorage.put("thumbnailExtension", thumbnailDetailsMap.get("extension"));
-	    		return;
-	    	}	
-	    	if("name".equals(key) || "description".equals(key) || "id".equals(key)) {	    		
-	    		charactersStorage.put(key, jsonObject.get(key) != null ? jsonObject.get(key) : "");  		
-	    			return;    
-	    	}	    	
-			
-	        Object value = jsonObject.get(key);	        
-	        handleValue(charactersStorage, value);
-	    });
-	}
-	
-	static void handleJSONArray(Map charactersStorage, JSONArray jsonArray) {
-	    jsonArray.iterator().forEachRemaining(element -> {
-	        handleValue(charactersStorage, element);
-	    });
-	}
 
 }

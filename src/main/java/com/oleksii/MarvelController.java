@@ -53,13 +53,10 @@ public class MarvelController {
 	  return recordingArr;
 	}
 		
-	// @GetMapping("/characters/{id}") 
-	
 	 @GetMapping(path="/characters/{id}", produces="application/json")
 	 String one(@PathVariable String id) { 
 		 Character marvelCharacter = marvelConnector.fetchRecordById(id);
-		 Gson gson = new Gson();
-		 //String jsonInString = gson.toJson(obj);
+		 Gson gson = new Gson();		 
 		 String marvelCharacterJson = gson.toJson(marvelCharacter);
 
 		 return marvelCharacterJson; 
